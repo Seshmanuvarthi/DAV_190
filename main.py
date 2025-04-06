@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Let's start by grabbing our cricket data from the file.
 try:
@@ -204,3 +206,37 @@ try:
     print("Runs by year and player:", pivot_table.head())
 except KeyError:
     print("Couldn't make the pivot table. Check the column names.")
+
+# --- Data Visualization ---
+
+print("Let's visualize some of this cricket data!")
+
+# Bar plot: Top 10 run scorers
+top_players = df.groupby('Player_Name')['Runs_Scored'].sum().sort_values(ascending=False).head(10)
+plt.figure(figsize=(12, 6))
+sns.barplot(x=top_players.index, y=top_players.values, hue=top_players.index, palette='viridis', legend=False)
+plt.title("Top 10 Run Scorers")
+plt.ylabel("Total Runs")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Line plot: Average runs scored per year
+plt.figure(figsize=(10, 5))
+average_runs_by_year.plot(kind='line', marker='o', color='green')
+plt.title("Average Runs per Year")
+plt.xlabel("Year")
+plt.ylabel("Average Runs")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Scatter plot: Runs vs Wickets
+plt.figure(figsize=(8, 6))
+plt.scatter(df['Runs_Scored'], df['Wickets_Taken'], alpha=0.7, color='blue')
+plt.title("Runs Scored vs. Wickets Taken")
+plt.xlabel("Runs Scored")
+plt.ylabel("Wickets Taken")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
