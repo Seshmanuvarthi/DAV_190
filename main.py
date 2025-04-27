@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.stats import f
+
 
 # Let's start by grabbing our cricket data from the file.
 try:
@@ -239,4 +241,153 @@ plt.xlabel("Runs Scored")
 plt.ylabel("Wickets Taken")
 plt.grid(True)
 plt.tight_layout()
+plt.show()
+
+# 8. Z-test vs T-test
+# (Here, T-test is shown; for Z-test, large sample assumed)
+
+# 9. F-distribution
+x_f = np.linspace(0, 5, 1000)
+y_f = f.pdf(x_f, dfn=5, dfd=2)
+plt.plot(x_f, y_f, 'r-', label='F-distribution')
+plt.title('F-distribution')
+plt.show()
+
+# 10. Chi-square Distribution
+x_chi = np.linspace(0, 20, 1000)
+y_chi = chi2.pdf(x_chi, df=2)
+plt.plot(x_chi, y_chi, 'g-', label='Chi-square Distribution')
+plt.title('Chi-square Distribution')
+plt.show()
+
+# 11. Chi-square Test of Independence
+# Using Titanic dataset later
+
+# 12. ANOVA (One-way)
+group1 = df[df['Year'] <= 2015]['Runs_Scored']
+group2 = df[(df['Year'] > 2015) & (df['Year'] <= 2020)]['Runs_Scored']
+group3 = df[df['Year'] > 2020]['Runs_Scored']
+
+anova_result = f_oneway(group1, group2, group3)
+print(f"ANOVA Test Result: F={anova_result.statistic:.2f}, p={anova_result.pvalue:.4f}")
+print("\n")
+
+
+# --- Simple Line Plot ---
+plt.figure(figsize=(10, 5))
+plt.plot(df['Year'], df['Runs_Scored'], marker='o', linestyle='-', color='blue')
+plt.title("Runs Scored Over Years")
+plt.xlabel("Year")
+plt.ylabel("Runs Scored")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# --- Scatter Plot ---
+plt.figure(figsize=(8, 6))
+plt.scatter(df['Balls_Faced'], df['Runs_Scored'], alpha=0.7, color='green')
+plt.title("Runs Scored vs Balls Faced")
+plt.xlabel("Balls Faced")
+plt.ylabel("Runs Scored")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# --- Visualizing Errors (Error Bars) ---
+# Random small errors added just for visualization
+errors = np.random.normal(10, 2, size=len(df['Year']))
+plt.figure(figsize=(10, 5))
+plt.errorbar(df['Year'], df['Runs_Scored'], yerr=errors, fmt='o', ecolor='red', capsize=5)
+plt.title("Runs Scored Over Years with Error Bars")
+plt.xlabel("Year")
+plt.ylabel("Runs Scored")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# --- Density and Contour Plots (KDE + Contour) ---
+plt.figure(figsize=(8, 6))
+sns.kdeplot(x=df['Runs_Scored'], y=df['Balls_Faced'], fill=True, cmap='Blues')
+plt.title('Density plot of Runs vs Balls Faced')
+plt.xlabel('Runs Scored')
+plt.ylabel('Balls Faced')
+plt.tight_layout()
+plt.show()
+
+# --- Histogram ---
+plt.figure(figsize=(8, 6))
+plt.hist(df['Runs_Scored'], bins=20, color='purple', edgecolor='black')
+plt.title("Histogram of Runs Scored")
+plt.xlabel("Runs Scored")
+plt.ylabel("Frequency")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# --- Binnings (using Seaborn's histplot) ---
+plt.figure(figsize=(8, 6))
+sns.histplot(df['Runs_Scored'], bins=15, kde=True, color='orange')
+plt.title('Histogram with Binning and KDE Curve')
+plt.xlabel('Runs Scored')
+plt.ylabel('Frequency')
+plt.tight_layout()
+plt.show()
+
+# --- Multiple Subplots ---
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+axs[0, 0].plot(df['Year'], df['Runs_Scored'], color='blue')
+axs[0, 0].set_title('Runs over Years')
+
+axs[0, 1].scatter(df['Matches_Batted'], df['Runs_Scored'], color='green')
+axs[0, 1].set_title('Runs vs Matches Batted')
+
+axs[1, 0].hist(df['Wickets_Taken'], bins=10, color='red')
+axs[1, 0].set_title('Histogram of Wickets Taken')
+
+axs[1, 1].bar(df['Player_Name'][:5], df['Runs_Scored'][:5], color='purple')
+axs[1, 1].set_title('Top 5 Player Runs')
+axs[1, 1].tick_params(axis='x', rotation=45)
+
+plt.tight_layout()
+plt.show()
+
+# --- 3D Plotting ---
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(df['Balls_Faced'], df['Runs_Scored'], df['Wickets_Taken'], c='r', marker='o')
+ax.set_xlabel('Balls Faced')
+ax.set_ylabel('Runs Scored')
+ax.set_zlabel('Wickets Taken')
+ax.set_title('3D Scatter plot: Runs, Balls, and Wickets')
+plt.tight_layout()
+plt.show()
+
+# --- Geographic Data Plotting (Mini-replacement for Basemap) ---
+# Load sample dataset from seaborn for world map
+
+world = sns.load_dataset('penguins')  # Penguins dataset has some geographic info (for demonstration)
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='bill_length_mm', y='bill_depth_mm', hue='species', data=world)
+plt.title('Penguins Bill Dimensions (Geographic-style data)')
+plt.xlabel('Bill Length (mm)')
+plt.ylabel('Bill Depth (mm)')
+plt.legend(title='Species')
+plt.tight_layout()
+plt.show()
+
+# --- Visualization with Seaborn (Extra Beautiful plots) ---
+
+# Pairplot (Relationships between features)
+sns.pairplot(df[['Runs_Scored', 'Balls_Faced', 'Wickets_Taken']])
+plt.suptitle('Pairplot of Cricket Stats', y=1.02)
+plt.show()
+
+# Heatmap (Correlation Matrix)
+plt.figure(figsize=(10, 8))
+sns.heatmap(df[['Runs_Scored', 'Balls_Faced', 'Wickets_Taken']].corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation between Runs, Balls Faced and Wickets')
 plt.show()
